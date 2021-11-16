@@ -1,6 +1,7 @@
 package tn.esprit.spring.services;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,21 +46,25 @@ public class MissionServiceImpl implements IMissionService {
 	}
     
 	public void affecterMissionADepartement(int missionId, int depId) {
-		if (Integer.toString(missionId) == "") {
+		if (Integer.toString(missionId).equals("")) {
 			logger.warn("No mission to Add !");
 		}
-		else if (Integer.toString(depId) == "") {
+		else if (Integer.toString(depId).equals("")) {
 			logger.warn("No Departement To Add mission to !");
 		}else {
 			
 		try {
 		logger.info("Adding Mission to Departement");		
-		Mission mission = missionRepository.findById(missionId).get();
-		Departement dep = deptRepoistory.findById(depId).get();
-		mission.setDepartement(dep);
-		missionRepository.save(mission);
+		Optional<Mission> mission = missionRepository.findById(missionId);
+		Optional<Departement> dep = deptRepoistory.findById(depId);
+		if(mission.isPresent() && dep.isPresent())
+		{
+		Mission miss = mission.get();
+		Departement depp = dep.get();
+		miss.setDepartement(depp);
+		missionRepository.save(miss);
 		logger.info("Mission Added to departement  Succefully !");
-		}catch(Exception e) {
+		}}catch(Exception e) {
 			logger.error(e.toString());
 		}
 		}
@@ -73,7 +78,7 @@ public class MissionServiceImpl implements IMissionService {
 	
 	public List<Mission> findAllMissionByEmployeJPQL(int employeId) {
 		List <Mission> missions = new ArrayList<>() ;
-		if (Integer.toString(employeId) == "") {
+		if (Integer.toString(employeId).equals("")) {
 			logger.warn("No employe found !");
 		}
 		else {
@@ -93,7 +98,7 @@ public class MissionServiceImpl implements IMissionService {
 	
 	public List<Employe> getAllEmployeByMission(int missionId) {
 		List <Employe> employes = new ArrayList<>() ;
-		if (Integer.toString(missionId) == "") {
+		if (Integer.toString(missionId).equals("")) {
 			logger.warn("No mission found !");
 		}
 		else {
